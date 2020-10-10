@@ -1,0 +1,171 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  GenericError:
+    description: GenericError us a generic error message return by a server
+    properties:
+      message:
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: github.com/a-berahman/auth-api/model
+  ObjectID:
+    items:
+      format: uint8
+      type: integer
+    title: ObjectID is the BSON ObjectID type.
+    type: array
+    x-go-package: go.mongodb.org/mongo-driver/bson/primitive
+  TokenRequest:
+    description: TokenRequest is token request structure
+    properties:
+      password:
+        description: the password for the user
+        type: string
+        x-go-name: Password
+      username:
+        description: the username for the user
+        type: string
+        x-go-name: Username
+    required:
+    - username
+    - password
+    type: object
+    x-go-package: github.com/a-berahman/auth-api/model
+  TokenResponse:
+    description: TokenResponse is token response structure
+    properties:
+      token:
+        description: the genration token
+        type: string
+        x-go-name: Token
+    type: object
+    x-go-package: github.com/a-berahman/auth-api/model
+  User:
+    description: User defines the structure for an API user
+    properties:
+      firstName:
+        type: string
+        x-go-name: FirstName
+      lastName:
+        type: string
+        x-go-name: LastName
+      mobile:
+        type: string
+        x-go-name: Mobile
+      password:
+        items:
+          format: uint8
+          type: integer
+        type: array
+        x-go-name: Password
+      role:
+        type: string
+        x-go-name: Role
+      sid:
+        $ref: '#/definitions/ObjectID'
+      status:
+        type: boolean
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/a-berahman/auth-api/model
+  ValidateRequest:
+    description: ValidateRequest is a token validate structure
+    properties:
+      token:
+        description: the token for the validate
+        type: string
+        x-go-name: Token
+    required:
+    - token
+    type: object
+    x-go-package: github.com/a-berahman/auth-api/model
+  ValidateResponse:
+    description: ValidateResponse is a validation returns structure in response
+    properties:
+      sid:
+        description: the sessionID of user
+        type: string
+        x-go-name: SID
+    type: object
+    x-go-package: github.com/a-berahman/auth-api/model
+info:
+  description: Documentation for Auth API
+  title: of Auth API
+  version: 1.0.0
+paths:
+  /v1/auth/token:
+    post:
+      description: Generate a token
+      operationId: getToken
+      parameters:
+      - description: GetTokenRequest data structure
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/TokenRequest'
+      responses:
+        "200":
+          $ref: '#/responses/getTokenResponse'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "403":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - auth
+  /v1/auth/validate:
+    post:
+      description: Validation token
+      operationId: validateToken
+      parameters:
+      - description: ValidateTokenRequest data structure
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/ValidateRequest'
+      responses:
+        "200":
+          $ref: '#/responses/validateResponse'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "403":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - auth
+produces:
+- application/json
+responses:
+  TokenResponse:
+    description: TokenResponse is token response structure
+    headers:
+      token:
+        description: the genration token
+        type: string
+  errorResponse:
+    description: Generic error message returned as a string
+    schema:
+      $ref: '#/definitions/GenericError'
+  getTokenResponse:
+    description: Data structure generate token response
+    schema:
+      $ref: '#/definitions/TokenResponse'
+  noContentResponse:
+    description: No content is returned by this API endpoint
+  validateResponse:
+    description: ValidateResponse is a validation returns structure in response
+    headers:
+      sid:
+        description: the sessionID of user
+        type: string
+  validateTokenResponse:
+    description: Data structure validate token response
+    schema:
+      $ref: '#/definitions/ValidateResponse'
+schemes:
+- http
+swagger: "2.0"
